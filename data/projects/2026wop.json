@@ -16,7 +16,7 @@
       "highlight": true,
       "equalContribution": true,
       "corresponding": false,
-      "url": ""
+      "url": "https://T7imal.github.io"
     },
     {
       "name": "Yutian Zhu",
@@ -28,13 +28,13 @@
       "name": "Qing Fang",
       "equalContribution": false,
       "corresponding": false,
-      "url": ""
+      "url": "https://qingfang1208.github.io/"
     },
     {
       "name": "Ligang Liu",
       "equalContribution": false,
       "corresponding": true,
-      "url": ""
+      "url": "http://staff.ustc.edu.cn/~lgliu/"
     }
   ],
   "venue": "ACM Transactions on Graphics (Proceedings of ACM SIGGRAPH 2026)",
@@ -58,7 +58,7 @@
   ],
   "teaser": {
     "type": "image",
-    "src": "teaser.pdf",
+    "src": "teaser.jpg",
     "alt": "Teaser image for Probe-based Walk on Spheres for Efficient Path Reusing",
     "caption": ""
   },
