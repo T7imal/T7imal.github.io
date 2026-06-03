@@ -104,8 +104,8 @@
               <div class="is-size-5 publication-authors">
                 <span class="author-block"><a href="https://T7imal.github.io/" target="_blank" rel="noopener">Wanchao Huang</a><sup>*</sup></span>
                 <span class="author-block"><a href="https://robatotree.github.io/academic/" target="_blank" rel="noopener">Yutian Zhu</a><sup>*</sup></span>
-                <span class="author-block"><a href="https://qingfang1208.github.io/" target="_blank" rel="noopener">Qing Fang</a></span>
-                <span class="author-block"><a href="http://staff.ustc.edu.cn/~lgliu/" target="_blank" rel="noopener">Ligang Liu</a><sup>&dagger;</sup></span>
+                <span class="author-block"><a href="https://qingfang1208.github.io/" target="_blank" rel="noopener">Qing Fang</a><sup>&dagger;</sup></span>
+                <span class="author-block"><a href="http://staff.ustc.edu.cn/~lgliu/" target="_blank" rel="noopener">Ligang Liu</a></span>
               </div>
 
               <div class="is-size-5 publication-authors">
@@ -125,6 +125,12 @@
                         <a href="https://github.com/USTCGCL-WoS/Walk-on-Probes.git" target="_blank" rel="noopener" class="external-link button is-normal is-rounded is-dark">
                           <span class="icon"><i class="fab fa-github"></i></span>
                           <span>Code</span>
+                        </a>
+                      </span>
+                      <span class="link-block">
+                        <a href="#videos" class="external-link button is-normal is-rounded is-dark">
+                          <span class="icon"><i class="fas fa-video"></i></span>
+                          <span>Video</span>
                         </a>
                       </span>
                 </div>
@@ -150,6 +156,24 @@
             <h2 class="title is-3">Abstract</h2>
             <div class="content has-text-justified">
           <p>The Walk on Spheres (WoS) algorithm is a mesh-free and highly flexible Monte Carlo method for solving partial differential equations, but its practical applicability is limited by slow $O(N^{-1/2})$ convergence. While prior variance reduction techniques exploit spatial correlations through integral properties of the PDE, they do not fully utilize the intrinsic Markov structure of the WoS process. We introduce a new variance reduction framework based on reusing intermediate states along each random walk. Leveraging the Markov property, we show that every point visited by a WoS trajectory provides a valid unbiased estimator, but its direct use is hindered by the complex distribution induced by dynamically generated spheres. To resolve this, we propose the Walk on Probes (WoP) algorithm, which replaces dynamic spheres with a set of fixed, pre-distributed spherical probes inside the domain. This converts the intractable distribution of path points into samples on fixed boundaries, enabling efficient evaluation through the Poisson integral formula. We further develop a specialized method that combines control variates with self-normalization to further reduce variance. Together, these components substantially improve sample efficiency while preserving the flexibility of WoS.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="hero is-small is-light" id="videos">
+      <div class="hero-body">
+        <div class="container is-max-desktop">
+          <div class="columns is-centered has-text-centered">
+            <div class="column is-four-fifths">
+              <h2 class="title is-3">Videos</h2>
+              <article class="publication-video-item">
+                <h3 class="title is-5">Fast Forward Video</h3>
+                <div class="publication-video">
+                  <iframe src="https://www.youtube.com/embed/oYvoeyQQdjQ" title="Fast Forward Video" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
+                </div>
+              </article>
             </div>
           </div>
         </div>

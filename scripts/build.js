@@ -85,10 +85,18 @@ function renderHomepageThumbnail(project) {
 }
 
 function renderHomepageLinks(project) {
+  const videos = validVideos(project);
   const links = [
     { label: "Project", homepageProjectLink: true },
     ...(project.links || []).filter((link) => link.label !== "Project"),
   ];
+  const hasVideoLink = links.some((link) => String(link.label || "").toLowerCase() === "video" || link.icon === "video");
+  if (videos.length && !hasVideoLink) {
+    links.push({
+      label: videos.length > 1 ? "Videos" : "Video",
+      homepageUrl: `projects/${project.slug}/#videos`,
+    });
+  }
 
   return [
     `            <div class="publication-links" aria-label="Publication links">`,
@@ -139,18 +147,59 @@ function projectIconClass(link) {
   return "fas fa-link";
 }
 
-function renderProjectLinks(links = []) {
+function videoSource(video = {}) {
+  return video.source || "";
+}
+
+function isYoutubeSource(source) {
+  try {
+    const url = new URL(source);
+    return url.hostname === "youtu.be" || url.hostname.endsWith("youtube.com");
+  } catch {
+    return false;
+  }
+}
+
+function validVideos(project) {
+  return (project.videos || []).filter((video) => {
+    const source = videoSource(video);
+    if (!source) {
+      return false;
+    }
+    return isYoutubeSource(source) ? Boolean(youtubeEmbedUrl(video)) : true;
+  });
+}
+
+function projectLinksFor(project) {
+  const links = [...(project.links || [])];
+  const videos = validVideos(project);
+  const hasVideoLink = links.some((link) => String(link.label || "").toLowerCase() === "video" || link.icon === "video");
+  if (videos.length && !hasVideoLink) {
+    links.push({
+      label: videos.length > 1 ? "Videos" : "Video",
+      url: "#videos",
+      icon: "video",
+      newTab: false,
+    });
+  }
+  return links;
+}
+
+function renderProjectLinks(project) {
+  const links = projectLinksFor(project);
   return links
-    .map((link) =>
-      [
+    .map((link) => {
+      const href = link.url || "#";
+      const targetAttrs = link.newTab === false || href.startsWith("#") ? "" : ` target="_blank" rel="noopener"`;
+      return [
         `                      <span class="link-block">`,
-        `                        <a href="${escapeHtml(link.url || "#")}" target="_blank" rel="noopener" class="external-link button is-normal is-rounded is-dark">`,
+        `                        <a href="${escapeHtml(href)}"${targetAttrs} class="external-link button is-normal is-rounded is-dark">`,
         `                          <span class="icon"><i class="${projectIconClass(link)}"></i></span>`,
         `                          <span>${escapeHtml(link.label)}</span>`,
         `                        </a>`,
         `                      </span>`,
-      ].join("\n"),
-    )
+      ].join("\n");
+    })
     .join("\n");
 }
 
@@ -174,6 +223,111 @@ function renderTeaser(project) {
   return [
     `      <img class="project-teaser-image" src="${escapeHtml(teaser.src || "teaser.jpg")}" alt="${escapeHtml(teaser.alt || project.title)}" loading="lazy">`,
     teaser.caption ? `      <h2 class="subtitle has-text-centered">${escapeHtml(teaser.caption)}</h2>` : "",
+  ]
+    .filter(Boolean)
+    .join("\n");
+}
+
+function youtubeEmbedUrl(video) {
+  const source = videoSource(video);
+  if (!source) {
+    return "";
+  }
+
+  try {
+    const url = new URL(source);
+    if (url.hostname === "youtu.be") {
+      const id = url.pathname.split("/").filter(Boolean)[0];
+      return id ? `https://www.youtube.com/embed/${encodeURIComponent(id)}` : "";
+    }
+    if (url.hostname.endsWith("youtube.com")) {
+      const id = url.searchParams.get("v");
+      if (id) {
+        return `https://www.youtube.com/embed/${encodeURIComponent(id)}`;
+      }
+      if (url.pathname.startsWith("/embed/")) {
+        return url.toString();
+      }
+    }
+  } catch {
+    return "";
+  }
+
+  return "";
+}
+
+function videoMime(video) {
+  if (video.mime) {
+    return video.mime;
+  }
+  const source = videoSource(video).toLowerCase();
+  if (source.endsWith(".webm")) return "video/webm";
+  if (source.endsWith(".ogg") || source.endsWith(".ogv")) return "video/ogg";
+  return "video/mp4";
+}
+
+function renderVideoItem(video, index) {
+  const title = video.title || `Video ${index + 1}`;
+  const caption = video.caption
+    ? `                <p class="video-caption">${escapeHtml(video.caption)}</p>`
+    : "";
+  let mediaHtml = "";
+
+  if (isYoutubeSource(videoSource(video))) {
+    const src = youtubeEmbedUrl(video);
+    if (!src) {
+      return "";
+    }
+    mediaHtml = `                  <iframe src="${escapeHtml(src)}" title="${escapeHtml(title)}" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>`;
+  } else {
+    const source = videoSource(video);
+    if (!source) {
+      return "";
+    }
+    const controls = video.controls === false ? "" : " controls";
+    const muted = video.muted ? " muted" : "";
+    const loop = video.loop ? " loop" : "";
+    const autoplay = video.autoplay ? " autoplay" : "";
+    const poster = video.poster ? ` poster="${escapeHtml(video.poster)}"` : "";
+    mediaHtml = [
+      `                  <video${poster}${controls}${muted}${loop}${autoplay} preload="${escapeHtml(video.preload || "metadata")}">`,
+      `                    <source src="${escapeHtml(source)}" type="${escapeHtml(videoMime(video))}">`,
+      `                  </video>`,
+    ].join("\n");
+  }
+
+  return [
+    `              <article class="publication-video-item">`,
+    `                <h3 class="title is-5">${escapeHtml(title)}</h3>`,
+    `                <div class="publication-video">`,
+    mediaHtml,
+    `                </div>`,
+    caption,
+    `              </article>`,
+  ]
+    .filter(Boolean)
+    .join("\n");
+}
+
+function renderVideoSection(project) {
+  const videos = validVideos(project);
+  if (!videos.length) {
+    return "";
+  }
+
+  return [
+    `    <section class="hero is-small is-light" id="videos">`,
+    `      <div class="hero-body">`,
+    `        <div class="container is-max-desktop">`,
+    `          <div class="columns is-centered has-text-centered">`,
+    `            <div class="column is-four-fifths">`,
+    `              <h2 class="title is-3">Videos</h2>`,
+    videos.map(renderVideoItem).join("\n"),
+    `            </div>`,
+    `          </div>`,
+    `        </div>`,
+    `      </div>`,
+    `    </section>`,
   ]
     .filter(Boolean)
     .join("\n");
@@ -231,9 +385,10 @@ function renderProjectPage(template, project) {
     AUTHORS_HTML: renderProjectAuthors(project.authors),
     AFFILIATION_AND_VENUE_HTML: escapeHtml(project.venue || ""),
     CONTRIBUTION_NOTES_HTML: renderContributionNotes(project.authors, "eql-cntrb"),
-    PROJECT_LINKS_HTML: renderProjectLinks(project.links),
+    PROJECT_LINKS_HTML: renderProjectLinks(project),
     TEASER_HTML: renderTeaser(project),
     ABSTRACT_HTML: renderParagraphs(project.abstract),
+    VIDEO_SECTION_HTML: renderVideoSection(project),
     EXTRA_HTML: renderExtraHtml(project),
     ABSTRACT_TEXT: escapeHtml(abstractText),
   });
