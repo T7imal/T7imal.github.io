@@ -27,13 +27,13 @@
     {
       "name": "Qing Fang",
       "equalContribution": false,
-      "corresponding": false,
+      "corresponding": true,
       "url": "https://qingfang1208.github.io/"
     },
     {
       "name": "Ligang Liu",
       "equalContribution": false,
-      "corresponding": true,
+      "corresponding": false,
       "url": "http://staff.ustc.edu.cn/~lgliu/"
     }
   ],
