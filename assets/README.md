@@ -1,15 +1,21 @@
 # Assets
 
-Use this directory for files served directly by GitHub Pages.
+Use this directory for homepage-level files served directly by GitHub Pages.
 
-- `images/` - profile photo, publication thumbnails, figures
-- `pdfs/` - CV, papers, posters, slides
+- `images/` - profile photo and homepage-only images
+- `pdfs/` - CV and homepage-only PDFs
+
+Put paper-specific assets in that paper's project directory instead:
+
+```text
+projects/<paper-slug>/thumbnail.jpg
+projects/<paper-slug>/teaser.jpg
+projects/<paper-slug>/paper.pdf
+```
 
 Recommended naming style:
 
 ```text
 assets/images/profile.jpg
-assets/images/paper-slug.jpg
-assets/pdfs/paper-slug.pdf
+assets/pdfs/cv.pdf
 ```
-

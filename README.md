@@ -4,7 +4,7 @@ This repository contains a plain static GitHub Pages homepage.
 
 ## Local Preview
 
-After editing publication data, rebuild the homepage:
+After editing project data, rebuild all generated pages:
 
 ```powershell
 node scripts/build.js
@@ -26,13 +26,41 @@ http://localhost:8000
 
 - `index.html` - homepage markup
 - `src/index.template.html` - homepage template used by the build script
+- `src/project.template.html` - project page template based on Academic Project Page Template
 - `style.css` - homepage styles
-- `data/publications.json` - publication data
-- `scripts/build.js` - generates `index.html` from the template and data
-- `assets/images/` - profile photo and publication thumbnails
-- `assets/pdfs/` - CV and paper PDFs
+- `data/projects/*.json` - single source of truth for publications and project pages
+- `scripts/build.js` - generates `index.html` and `projects/<paper-slug>/index.html`
+- `static/` - shared site assets, including template CSS/JS and icons
+- `assets/images/` - profile photo and homepage-only images
+- `assets/pdfs/` - CV and homepage-only PDFs
+- `projects/<paper-slug>/` - generated project page plus paper-specific assets
 
 ## Notes
 
-- Keep project pages under `projects/<paper-slug>/` when adding paper-specific pages.
+- Edit `data/projects/<paper-slug>.json` rather than generated HTML.
+- Do not hand-edit `index.html` or `projects/<paper-slug>/index.html`; they are generated.
+- Put paper-specific assets next to the project page, for example:
+
+```text
+projects/2026wop/
+  thumbnail.jpg
+  teaser.jpg
+  paper.pdf
+```
+
+- Author fields support:
+
+```json
+{
+  "name": "Author Name",
+  "url": "https://example.com",
+  "highlight": true,
+  "equalContribution": false,
+  "corresponding": true
+}
+```
+
+- For project-specific custom HTML, set `extraHtml` in the project JSON and place the file in that project directory.
+- Project pages intentionally omit BibTeX; link to the paper PDF or official publication page instead.
+- Project abstracts support LaTeX math via MathJax, including inline `$...$` and display `$$...$$`.
 - Keep paths relative where possible so the site works locally and on GitHub Pages.

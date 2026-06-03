@@ -1,0 +1,77 @@
+{
+  "slug": "2026wop",
+  "title": "Probe-based Walk on Spheres for Efficient Path Reusing",
+  "description": "Probe-based Walk on Spheres for Efficient Path Reusing.",
+  "keywords": [
+    "computer graphics",
+    "rendering",
+    "walk on spheres",
+    "path reuse"
+  ],
+  "date": "2026-07-19",
+  "dateText": "Jul 19, 2026",
+  "authors": [
+    {
+      "name": "Wanchao Huang",
+      "highlight": true,
+      "equalContribution": true,
+      "corresponding": false,
+      "url": ""
+    },
+    {
+      "name": "Yutian Zhu",
+      "equalContribution": true,
+      "corresponding": false,
+      "url": ""
+    },
+    {
+      "name": "Qing Fang",
+      "equalContribution": false,
+      "corresponding": false,
+      "url": ""
+    },
+    {
+      "name": "Ligang Liu",
+      "equalContribution": false,
+      "corresponding": true,
+      "url": ""
+    }
+  ],
+  "venue": "ACM Transactions on Graphics (Proceedings of ACM SIGGRAPH 2026)",
+  "thumbnail": {
+    "src": "projects/2026wop/thumbnail.jpg",
+    "alt": "Thumbnail of the paper Probe-based Walk on Spheres for Efficient Path Reusing"
+  },
+  "links": [
+    {
+      "label": "Paper",
+      "url": "paper.pdf",
+      "homepageUrl": "projects/2026wop/paper.pdf",
+      "icon": "pdf"
+    },
+    {
+      "label": "Code",
+      "url": "https://github.com/USTCGCL-WoS/Walk-on-Probes.git",
+      "homepageUrl": "https://github.com/USTCGCL-WoS/Walk-on-Probes.git",
+      "icon": "github"
+    }
+  ],
+  "teaser": {
+    "type": "image",
+    "src": "teaser.jpg",
+    "alt": "Teaser image for Probe-based Walk on Spheres for Efficient Path Reusing",
+    "caption": ""
+  },
+  "abstract": [
+    "The Walk on Spheres (WoS) algorithm is a mesh-free and highly flexible Monte Carlo method for solving partial differential equations, but its practical applicability is limited by slow $O(N^{-1/2})$ convergence. While prior variance reduction techniques exploit spatial correlations through integral properties of the PDE, they do not fully utilize the intrinsic Markov structure of the WoS process. We introduce a new variance reduction framework based on reusing intermediate states along each random walk. Leveraging the Markov property, we show that every point visited by a WoS trajectory provides a valid unbiased estimator, but its direct use is hindered by the complex distribution induced by dynamically generated spheres. To resolve this, we propose the Walk on Probes (WoP) algorithm, which replaces dynamic spheres with a set of fixed, pre-distributed spherical probes inside the domain. This converts the intractable distribution of path points into samples on fixed boundaries, enabling efficient evaluation through the Poisson integral formula. We further develop a specialized method that combines control variates with self-normalization to further reduce variance. Together, these components substantially improve sample efficiency while preserving the flexibility of WoS."
+  ],
+  "sections": [
+    {
+      "title": "Details",
+      "paragraphs": [
+        "Add supplementary figures, result galleries, videos, or implementation notes in this section."
+      ]
+    }
+  ],
+  "extraHtml": ""
+}

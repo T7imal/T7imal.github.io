@@ -2,13 +2,11 @@ const fs = require("fs");
 const path = require("path");
 
 const root = path.resolve(__dirname, "..");
-const templatePath = path.join(root, "src", "index.template.html");
-const publicationsPath = path.join(root, "data", "publications.json");
-const outputPath = path.join(root, "index.html");
-
-function readJson(filePath) {
-  return JSON.parse(fs.readFileSync(filePath, "utf8"));
-}
+const projectsDataDir = path.join(root, "data", "projects");
+const homepageTemplatePath = path.join(root, "src", "index.template.html");
+const projectTemplatePath = path.join(root, "src", "project.template.html");
+const homepageOutputPath = path.join(root, "index.html");
+const projectsOutputDir = path.join(root, "projects");
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -19,74 +17,105 @@ function escapeHtml(value) {
     .replaceAll("'", "&#39;");
 }
 
-function renderAuthors(authors = [], highlightAuthors = []) {
-  const highlighted = new Set(highlightAuthors);
-  return authors
-    .map((author) => {
-      const name = escapeHtml(author);
-      return highlighted.has(author) ? `<strong>${name}</strong>` : name;
-    })
-    .join(", ");
+function readJson(filePath) {
+  return JSON.parse(fs.readFileSync(filePath, "utf8"));
 }
 
-function renderThumbnail(publication) {
-  const title = publication.title || "publication";
-  const url = publication.url || "#";
-  const aria = `Open project page for ${title}`;
+function readProjects() {
+  return fs
+    .readdirSync(projectsDataDir)
+    .filter((file) => file.endsWith(".json"))
+    .sort()
+    .map((file) => readJson(path.join(projectsDataDir, file)))
+    .sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
+}
 
-  if (!publication.thumbnail) {
-    return `          <a class="publication-thumb" href="${escapeHtml(url)}" aria-label="${escapeHtml(aria)}"></a>`;
+function authorMarkers(author) {
+  return `${author.equalContribution ? "<sup>*</sup>" : ""}${author.corresponding ? "<sup>&dagger;</sup>" : ""}`;
+}
+
+function renderAuthorName(author, options = {}) {
+  const shouldHighlight = options.highlight !== false && author.highlight;
+  const name = shouldHighlight ? `<strong>${escapeHtml(author.name)}</strong>` : escapeHtml(author.name);
+  const linked = author.url ? `<a href="${escapeHtml(author.url)}" target="_blank" rel="noopener">${name}</a>` : name;
+  return `${linked}${options.markers === false ? "" : authorMarkers(author)}`;
+}
+
+function renderHomepageAuthors(authors = []) {
+  return authors.map((author) => renderAuthorName(author)).join(", ");
+}
+
+function renderContributionNotes(authors = [], className = "") {
+  const notes = [];
+  if (authors.some((author) => author.equalContribution)) {
+    notes.push("<sup>*</sup>Equal contribution");
   }
+  if (authors.some((author) => author.corresponding)) {
+    notes.push("<sup>&dagger;</sup>Corresponding author");
+  }
+  if (!notes.length) {
+    return "";
+  }
+  const classAttr = className ? ` class="${className}"` : "";
+  return `<span${classAttr}><small><br>${notes.join(" &nbsp;&nbsp; ")}</small></span>`;
+}
 
+function homepageUrlFor(project, link) {
+  if (link.homepageUrl) {
+    return link.homepageUrl;
+  }
+  if (link.homepageProjectLink) {
+    return `projects/${project.slug}/`;
+  }
+  if (/^(https?:|mailto:|#)/.test(link.url || "")) {
+    return link.url || "#";
+  }
+  return `projects/${project.slug}/${link.url || ""}`;
+}
+
+function renderHomepageThumbnail(project) {
+  const thumbnail = project.thumbnail || {};
+  const src = thumbnail.src || `projects/${project.slug}/thumbnail.jpg`;
+  const url = `projects/${project.slug}/`;
   return [
-    `          <a class="publication-thumb" href="${escapeHtml(url)}" aria-label="${escapeHtml(aria)}">`,
-    `            <img src="${escapeHtml(publication.thumbnail)}" alt="${escapeHtml(publication.thumbnailAlt || title)}">`,
+    `          <a class="publication-thumb" href="${escapeHtml(url)}" aria-label="${escapeHtml(`Open project page for ${project.title}`)}">`,
+    `            <img src="${escapeHtml(src)}" alt="${escapeHtml(thumbnail.alt || project.title)}">`,
     `          </a>`,
   ].join("\n");
 }
 
-function renderDate(publication) {
-  if (!publication.dateText) {
-    return "";
-  }
-
-  const datetime = publication.date ? ` datetime="${escapeHtml(publication.date)}"` : "";
-  return [
-    `            <p class="publication-date">`,
-    `              <time${datetime}>${escapeHtml(publication.dateText)}</time>`,
-    `            </p>`,
-  ].join("\n");
-}
-
-function renderLinks(links = []) {
-  if (!links.length) {
-    return "";
-  }
-
-  const renderedLinks = links
-    .map((link) => `              <a href="${escapeHtml(link.url || "#")}">${escapeHtml(link.label)}</a>`)
-    .join("\n");
+function renderHomepageLinks(project) {
+  const links = [
+    { label: "Project", homepageProjectLink: true },
+    ...(project.links || []).filter((link) => link.label !== "Project"),
+  ];
 
   return [
     `            <div class="publication-links" aria-label="Publication links">`,
-    renderedLinks,
+    ...links.map((link) => `              <a href="${escapeHtml(homepageUrlFor(project, link))}">${escapeHtml(link.label)}</a>`),
     `            </div>`,
   ].join("\n");
 }
 
-function renderPublication(publication) {
-  const title = publication.title || "Untitled publication";
-  const url = publication.url || "#";
+function renderHomepagePublication(project) {
+  const projectUrl = `projects/${project.slug}/`;
+  const dateHtml = project.dateText
+    ? [
+        `            <p class="publication-date">`,
+        `              <time${project.date ? ` datetime="${escapeHtml(project.date)}"` : ""}>${escapeHtml(project.dateText)}</time>`,
+        `            </p>`,
+      ].join("\n")
+    : "";
 
   return [
     `        <article class="publication">`,
-    renderThumbnail(publication),
+    renderHomepageThumbnail(project),
     `          <div class="publication-body">`,
-    `            <h3><a href="${escapeHtml(url)}">${escapeHtml(title)}</a></h3>`,
-    `            <p class="publication-authors">${renderAuthors(publication.authors, publication.highlightAuthors)}</p>`,
-    `            <p class="publication-venue">${escapeHtml(publication.venue || "")}</p>`,
-    renderDate(publication),
-    renderLinks(publication.links),
+    `            <h3><a href="${escapeHtml(projectUrl)}">${escapeHtml(project.title)}</a></h3>`,
+    `            <p class="publication-authors">${renderHomepageAuthors(project.authors)}</p>`,
+    `            <p class="publication-venue">${escapeHtml(project.venue || "")}</p>`,
+    dateHtml,
+    renderHomepageLinks(project),
     `          </div>`,
     `        </article>`,
   ]
@@ -94,14 +123,147 @@ function renderPublication(publication) {
     .join("\n");
 }
 
-function main() {
-  const template = fs.readFileSync(templatePath, "utf8");
-  const publications = readJson(publicationsPath);
-  const publicationsHtml = publications.map(renderPublication).join("\n\n");
-  const output = template.replace("<!-- PUBLICATIONS_PLACEHOLDER -->", publicationsHtml);
+function renderProjectAuthors(authors = []) {
+  return authors
+    .map((author) => `<span class="author-block">${renderAuthorName(author, { highlight: false })}</span>`)
+    .join("\n                ");
+}
 
-  fs.writeFileSync(outputPath, output);
-  console.log(`Built ${path.relative(root, outputPath)} from ${publications.length} publications.`);
+function projectIconClass(link) {
+  const icon = link.icon || link.label.toLowerCase();
+  if (icon === "pdf" || icon === "paper" || icon === "supplementary") return "fas fa-file-pdf";
+  if (icon === "github" || icon === "code") return "fab fa-github";
+  if (icon === "video") return "fas fa-video";
+  if (icon === "slides") return "fas fa-file-powerpoint";
+  if (icon === "arxiv") return "ai ai-arxiv";
+  return "fas fa-link";
+}
+
+function renderProjectLinks(links = []) {
+  return links
+    .map((link) =>
+      [
+        `                      <span class="link-block">`,
+        `                        <a href="${escapeHtml(link.url || "#")}" target="_blank" rel="noopener" class="external-link button is-normal is-rounded is-dark">`,
+        `                          <span class="icon"><i class="${projectIconClass(link)}"></i></span>`,
+        `                          <span>${escapeHtml(link.label)}</span>`,
+        `                        </a>`,
+        `                      </span>`,
+      ].join("\n"),
+    )
+    .join("\n");
+}
+
+function renderParagraphs(paragraphs = []) {
+  return paragraphs.map((paragraph) => `          <p>${escapeHtml(paragraph)}</p>`).join("\n");
+}
+
+function renderTeaser(project) {
+  const teaser = project.teaser || {};
+  if (teaser.type === "video") {
+    return [
+      `      <video poster="${escapeHtml(teaser.poster || "")}" id="tree" autoplay controls muted loop height="100%" preload="metadata">`,
+      `        <source src="${escapeHtml(teaser.src || "")}" type="${escapeHtml(teaser.mime || "video/mp4")}">`,
+      `      </video>`,
+      teaser.caption ? `      <h2 class="subtitle has-text-centered">${escapeHtml(teaser.caption)}</h2>` : "",
+    ]
+      .filter(Boolean)
+      .join("\n");
+  }
+
+  return [
+    `      <img class="project-teaser-image" src="${escapeHtml(teaser.src || "teaser.jpg")}" alt="${escapeHtml(teaser.alt || project.title)}" loading="lazy">`,
+    teaser.caption ? `      <h2 class="subtitle has-text-centered">${escapeHtml(teaser.caption)}</h2>` : "",
+  ]
+    .filter(Boolean)
+    .join("\n");
+}
+
+function renderExtraHtml(project) {
+  if (!project.extraHtml) {
+    return "";
+  }
+  const extraPath = path.join(projectsOutputDir, project.slug, project.extraHtml);
+  if (!fs.existsSync(extraPath)) {
+    throw new Error(`Missing extraHtml file for ${project.slug}: ${extraPath}`);
+  }
+  return fs.readFileSync(extraPath, "utf8");
+}
+
+function replaceAll(template, values) {
+  let output = template;
+  for (const [key, value] of Object.entries(values)) {
+    output = output.replaceAll(`{{${key}}}`, value ?? "");
+  }
+  return output;
+}
+
+function jsonString(value) {
+  return JSON.stringify(String(value ?? ""));
+}
+
+function jsonArray(values = []) {
+  return JSON.stringify(values);
+}
+
+function renderProjectPage(template, project) {
+  const authorNames = (project.authors || []).map((author) => author.name).join(", ");
+  const abstractText = (project.abstract || []).join("\n\n");
+  return replaceAll(template, {
+    PAPER_TITLE: escapeHtml(project.title),
+    DESCRIPTION: escapeHtml(project.description || project.title),
+    KEYWORDS: escapeHtml((project.keywords || []).join(", ")),
+    AUTHOR_NAMES: escapeHtml(authorNames),
+    SITE_NAME: "Personal Academic Homepage",
+    PROJECT_URL: escapeHtml(`projects/${project.slug}/`),
+    SOCIAL_IMAGE: escapeHtml((project.thumbnail && project.thumbnail.src) || `projects/${project.slug}/thumbnail.jpg`),
+    PUBLISHED_TIME: escapeHtml(project.date || `${project.year || ""}-01-01`),
+    YEAR: escapeHtml(project.year || (project.date || "").slice(0, 4)),
+    VENUE: escapeHtml(project.venue || ""),
+    SCHEMA_TITLE: jsonString(project.title),
+    SCHEMA_DESCRIPTION: jsonString(project.description || project.title),
+    SCHEMA_DATE: jsonString(project.date || `${project.year || ""}-01-01`),
+    SCHEMA_VENUE: jsonString(project.venue || ""),
+    SCHEMA_URL: jsonString(`projects/${project.slug}/`),
+    SCHEMA_IMAGE: jsonString((project.thumbnail && project.thumbnail.src) || `projects/${project.slug}/thumbnail.jpg`),
+    SCHEMA_KEYWORDS: jsonArray(project.keywords || []),
+    SCHEMA_ABSTRACT: jsonString(abstractText),
+    AUTHORS_HTML: renderProjectAuthors(project.authors),
+    AFFILIATION_AND_VENUE_HTML: escapeHtml(project.venue || ""),
+    CONTRIBUTION_NOTES_HTML: renderContributionNotes(project.authors, "eql-cntrb"),
+    PROJECT_LINKS_HTML: renderProjectLinks(project.links),
+    TEASER_HTML: renderTeaser(project),
+    ABSTRACT_HTML: renderParagraphs(project.abstract),
+    EXTRA_HTML: renderExtraHtml(project),
+    ABSTRACT_TEXT: escapeHtml(abstractText),
+  });
+}
+
+function buildHomepage(projects) {
+  const template = fs.readFileSync(homepageTemplatePath, "utf8");
+  const publicationsHtml = projects.map(renderHomepagePublication).join("\n\n");
+  const output = template.replace("<!-- PUBLICATIONS_PLACEHOLDER -->", publicationsHtml);
+  fs.writeFileSync(homepageOutputPath, output);
+  console.log(`Built index.html from ${projects.length} projects.`);
+}
+
+function buildProjects(projects) {
+  const template = fs.readFileSync(projectTemplatePath, "utf8");
+  for (const project of projects) {
+    if (!project.slug) {
+      throw new Error(`Project "${project.title}" is missing required field "slug".`);
+    }
+    const outputDir = path.join(projectsOutputDir, project.slug);
+    fs.mkdirSync(outputDir, { recursive: true });
+    fs.writeFileSync(path.join(outputDir, "index.html"), renderProjectPage(template, project));
+    console.log(`Built projects/${project.slug}/index.html.`);
+  }
+}
+
+function main() {
+  const projects = readProjects();
+  buildHomepage(projects);
+  buildProjects(projects);
 }
 
 main();

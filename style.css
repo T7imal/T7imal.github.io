@@ -123,19 +123,18 @@ a:hover {
   font-weight: 700;
 }
 
-.profile-icons svg {
-  width: 24px;
-  height: 24px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.8;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+.profile-icons .icon {
+  display: inline-flex;
+  width: 1.5rem;
+  height: 1.5rem;
+  align-items: center;
+  justify-content: center;
 }
 
-.profile-icons a[aria-label="GitHub"] svg {
-  fill: currentColor;
-  stroke: none;
+.profile-icons i,
+.profile-icons svg {
+  font-size: 1.45rem;
+  line-height: 1;
 }
 
 .about {

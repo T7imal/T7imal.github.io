@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta name="title" content="Probe-based Walk on Spheres for Efficient Path Reusing - Wanchao Huang, Yutian Zhu, Qing Fang, Ligang Liu">
+  <meta name="description" content="Probe-based Walk on Spheres for Efficient Path Reusing.">
+  <meta name="keywords" content="computer graphics, rendering, walk on spheres, path reuse">
+  <meta name="author" content="Wanchao Huang, Yutian Zhu, Qing Fang, Ligang Liu">
+  <meta name="robots" content="index, follow">
+  <meta name="language" content="English">
+
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Personal Academic Homepage">
+  <meta property="og:title" content="Probe-based Walk on Spheres for Efficient Path Reusing">
+  <meta property="og:description" content="Probe-based Walk on Spheres for Efficient Path Reusing.">
+  <meta property="og:url" content="projects/2026wop/">
+  <meta property="og:image" content="projects/2026wop/thumbnail.jpg">
+  <meta property="og:image:alt" content="Probe-based Walk on Spheres for Efficient Path Reusing - Research Preview">
+  <meta property="article:published_time" content="2026-07-19">
+  <meta property="article:section" content="Research">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Probe-based Walk on Spheres for Efficient Path Reusing">
+  <meta name="twitter:description" content="Probe-based Walk on Spheres for Efficient Path Reusing.">
+  <meta name="twitter:image" content="projects/2026wop/thumbnail.jpg">
+  <meta name="twitter:image:alt" content="Probe-based Walk on Spheres for Efficient Path Reusing - Research Preview">
+
+  <meta name="citation_title" content="Probe-based Walk on Spheres for Efficient Path Reusing">
+  <meta name="citation_publication_date" content="2026">
+  <meta name="citation_conference_title" content="ACM Transactions on Graphics (Proceedings of ACM SIGGRAPH 2026)">
+
+  <meta name="theme-color" content="#2563eb">
+
+  <title>Probe-based Walk on Spheres for Efficient Path Reusing</title>
+
+  <link rel="icon" type="image/svg+xml" href="../../static/images/github.svg">
+  <link rel="apple-touch-icon" href="../../static/images/github.svg">
+
+  <link rel="stylesheet" href="../../static/css/bulma.min.css">
+  <link rel="stylesheet" href="../../static/css/index.css">
+  <link rel="preload" href="../../static/css/bulma-carousel.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="../../static/css/bulma-slider.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+
+  <noscript>
+    <link rel="stylesheet" href="../../static/css/bulma-carousel.min.css">
+    <link rel="stylesheet" href="../../static/css/bulma-slider.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  </noscript>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script defer src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="../../static/js/fontawesome.all.min.js"></script>
+  <script defer src="../../static/js/bulma-carousel.min.js"></script>
+  <script defer src="../../static/js/bulma-slider.min.js"></script>
+  <script defer src="../../static/js/index.js"></script>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [["$", "$"], ["\\(", "\\)"]],
+        displayMath: [["$$", "$$"], ["\\[", "\\]"]]
+      },
+      options: {
+        skipHtmlTags: ["script", "noscript", "style", "textarea", "pre", "code"]
+      }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ScholarlyArticle",
+    "headline": "Probe-based Walk on Spheres for Efficient Path Reusing",
+    "description": "Probe-based Walk on Spheres for Efficient Path Reusing.",
+    "datePublished": "2026-07-19",
+    "publisher": {
+      "@type": "Organization",
+      "name": "ACM Transactions on Graphics (Proceedings of ACM SIGGRAPH 2026)"
+    },
+    "url": "projects/2026wop/",
+    "image": "projects/2026wop/thumbnail.jpg",
+    "keywords": ["computer graphics","rendering","walk on spheres","path reuse"],
+    "abstract": "The Walk on Spheres (WoS) algorithm is a mesh-free and highly flexible Monte Carlo method for solving partial differential equations, but its practical applicability is limited by slow $O(N^{-1/2})$ convergence. While prior variance reduction techniques exploit spatial correlations through integral properties of the PDE, they do not fully utilize the intrinsic Markov structure of the WoS process. We introduce a new variance reduction framework based on reusing intermediate states along each random walk. Leveraging the Markov property, we show that every point visited by a WoS trajectory provides a valid unbiased estimator, but its direct use is hindered by the complex distribution induced by dynamically generated spheres. To resolve this, we propose the Walk on Probes (WoP) algorithm, which replaces dynamic spheres with a set of fixed, pre-distributed spherical probes inside the domain. This converts the intractable distribution of path points into samples on fixed boundaries, enabling efficient evaluation through the Poisson integral formula. We further develop a specialized method that combines control variates with self-normalization to further reduce variance. Together, these components substantially improve sample efficiency while preserving the flexibility of WoS.",
+    "isAccessibleForFree": true
+  }
+  </script>
+</head>
+<body>
+  <button class="scroll-to-top" onclick="scrollToTop()" title="Scroll to top" aria-label="Scroll to top">
+    <i class="fas fa-chevron-up"></i>
+  </button>
+
+  <main id="main-content">
+    <section class="hero">
+      <div class="hero-body">
+        <div class="container is-max-desktop">
+          <div class="columns is-centered">
+            <div class="column has-text-centered">
+              <h1 class="title is-1 publication-title">Probe-based Walk on Spheres for Efficient Path Reusing</h1>
+              <div class="is-size-5 publication-authors">
+                <span class="author-block">Wanchao Huang<sup>*</sup></span>
+                <span class="author-block">Yutian Zhu<sup>*</sup></span>
+                <span class="author-block">Qing Fang</span>
+                <span class="author-block">Ligang Liu<sup>&dagger;</sup></span>
+              </div>
+
+              <div class="is-size-5 publication-authors">
+                <span class="author-block">ACM Transactions on Graphics (Proceedings of ACM SIGGRAPH 2026)</span>
+                <span class="eql-cntrb"><small><br><sup>*</sup>Equal contribution &nbsp;&nbsp; <sup>&dagger;</sup>Corresponding author</small></span>
+              </div>
+
+              <div class="column has-text-centered">
+                <div class="publication-links">
+                      <span class="link-block">
+                        <a href="paper.pdf" target="_blank" rel="noopener" class="external-link button is-normal is-rounded is-dark">
+                          <span class="icon"><i class="fas fa-file-pdf"></i></span>
+                          <span>Paper</span>
+                        </a>
+                      </span>
+                      <span class="link-block">
+                        <a href="https://github.com/USTCGCL-WoS/Walk-on-Probes.git" target="_blank" rel="noopener" class="external-link button is-normal is-rounded is-dark">
+                          <span class="icon"><i class="fab fa-github"></i></span>
+                          <span>Code</span>
+                        </a>
+                      </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="hero teaser">
+      <div class="container is-max-desktop">
+        <div class="hero-body">
+      <img class="project-teaser-image" src="teaser.jpg" alt="Teaser image for Probe-based Walk on Spheres for Efficient Path Reusing" loading="lazy">
+        </div>
+      </div>
+    </section>
+
+    <section class="section hero is-light">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered has-text-centered">
+          <div class="column is-four-fifths">
+            <h2 class="title is-3">Abstract</h2>
+            <div class="content has-text-justified">
+          <p>The Walk on Spheres (WoS) algorithm is a mesh-free and highly flexible Monte Carlo method for solving partial differential equations, but its practical applicability is limited by slow $O(N^{-1/2})$ convergence. While prior variance reduction techniques exploit spatial correlations through integral properties of the PDE, they do not fully utilize the intrinsic Markov structure of the WoS process. We introduce a new variance reduction framework based on reusing intermediate states along each random walk. Leveraging the Markov property, we show that every point visited by a WoS trajectory provides a valid unbiased estimator, but its direct use is hindered by the complex distribution induced by dynamically generated spheres. To resolve this, we propose the Walk on Probes (WoP) algorithm, which replaces dynamic spheres with a set of fixed, pre-distributed spherical probes inside the domain. This converts the intractable distribution of path points into samples on fixed boundaries, enabling efficient evaluation through the Poisson integral formula. We further develop a specialized method that combines control variates with self-normalization to further reduce variance. Together, these components substantially improve sample efficiency while preserving the flexibility of WoS.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="columns is-centered">
+        <div class="column is-8">
+          <div class="content">
+            <p>
+              This page was built using the
+              <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank" rel="noopener">Academic Project Page Template</a>,
+              adopted from the <a href="https://nerfies.github.io" target="_blank" rel="noopener">Nerfies</a> project page.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
