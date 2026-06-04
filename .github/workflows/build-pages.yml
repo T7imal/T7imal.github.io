@@ -1,0 +1,33 @@
+name: Build generated pages
+
+on:
+  push:
+    paths:
+      - "data/projects/**"
+      - "src/**"
+      - "scripts/build.js"
+      - ".github/workflows/build-pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Build pages
+        run: node scripts/build.js
+
+      - name: Commit generated pages
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Auto build generated pages"
+          file_pattern: "index.html projects/**/index.html"
