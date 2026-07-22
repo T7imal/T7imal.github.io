@@ -144,6 +144,7 @@ function projectIconClass(link) {
   if (icon === "video") return "fas fa-video";
   if (icon === "slides") return "fas fa-file-powerpoint";
   if (icon === "arxiv") return "ai ai-arxiv";
+  if (icon === "doi") return "ai ai-doi";
   return "fas fa-link";
 }
 
